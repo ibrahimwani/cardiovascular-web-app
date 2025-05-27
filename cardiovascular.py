@@ -1,22 +1,24 @@
 import numpy as np
-import pickle
+import joblib  # Use joblib instead of pickle
 import streamlit as st
 import os
 
 # Resolve path to model directory (same as script location)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Load all models from .sav files
+# Load all models from .sav files using joblib
 model_names = ["RandomForest", "GradientBoosting", "ExtraTrees", "DecisionTree", "XGBoost"]
 models = {}
 
 for name in model_names:
     model_path = os.path.join(BASE_DIR, f"{name}_model.sav")
     try:
-        with open(model_path, "rb") as f:
-            models[name] = pickle.load(f)
+        models[name] = joblib.load(model_path)
     except FileNotFoundError:
         st.warning(f"⚠️ Model file '{name}_model.sav' not found in {BASE_DIR}")
+        continue
+    except Exception as e:
+        st.error(f"❌ Error loading model '{name}': {str(e)}")
         continue
 
 # Prediction logic
