@@ -7,7 +7,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Load all models from .sav files using joblib
-model_names = ["RandomForest", "GradientBoosting", "ExtraTrees", "DecisionTree", "XGBoost"]
+model_names = ["RandomForest",  "ExtraTrees", "DecisionTree", "XGBoost"]
 models = {}
 
 for name in model_names:
