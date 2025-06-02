@@ -47,16 +47,35 @@ def main():
     st.write("Enter the following details:")
 
     age = st.text_input("Age (years)")
-    gender = st.selectbox("Gender", [1, 2], format_func=lambda x: "Female" if x == 1 else "Male")
+
+    gender = st.selectbox(
+        "Gender", [1, 2], format_func=lambda x: "Female" if x == 1 else "Male"
+    )
+
     height = st.text_input("Height (cm)")
     weight = st.text_input("Weight (kg)")
     ap_hi = st.text_input("Systolic BP")
     ap_lo = st.text_input("Diastolic BP")
-    cholesterol = st.selectbox("Cholesterol", [1, 2, 3])
-    gluc = st.selectbox("Glucose", [1, 2, 3])
-    smoke = st.selectbox("Smoker", [0, 1])
-    alco = st.selectbox("Alcohol consumption", [0, 1])
-    active = st.selectbox("Physically active", [0, 1])
+
+    cholesterol = st.selectbox(
+        "Cholesterol", [1, 2, 3], format_func=lambda x: "1 (normal)" if x == 1 else "2 (above normal)" if x == 2 else "3 (well above normal)"
+    )
+
+    gluc = st.selectbox(
+        "Glucose", [1, 2, 3], format_func=lambda x: "1 (normal)" if x == 1 else "2 (above normal)" if x == 2 else "3 (well above normal)"
+    )
+
+    smoke = st.selectbox(
+         "Smoker", [0, 1], format_func=lambda x: "No" if x == 0 else "Yes"
+    )
+
+    alco = st.selectbox(
+        "Alcohol consumption", [0, 1], format_func=lambda x: "No" if x == 0 else "Yes"
+    )
+
+    active = st.selectbox(
+        "Physically active", [0, 1], format_func=lambda x: "No" if x == 0 else "Yes"
+    )
 
     if st.button("Predict Cardiovascular Risk"):
         try:
@@ -69,7 +88,7 @@ def main():
             result, probability, model_used = cardio_prediction(input_list)
 
             st.success(result)
-            st.info(f"🧠 {model_used} predicted a probability of {probability * 100:.2f}%")
+            st.info(f"🧠 {model_used} has predicted a probability of having cardiovascular disease :{probability * 100:.2f}%")
         except Exception as e:
             st.error(f"❌ Please make sure all inputs are valid numeric values.\n\n{str(e)}")
 
