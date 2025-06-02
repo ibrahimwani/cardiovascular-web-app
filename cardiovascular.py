@@ -58,11 +58,11 @@ def main():
     ap_lo = st.text_input("Diastolic BP")
 
     cholesterol = st.selectbox(
-        "Cholesterol", [1, 2, 3], format_func=lambda x: "1 (normal)" if x == 1 else "2 (above normal)" if x == 2 else "3 (well above normal)"
+        "Cholesterol", [1, 2, 3], format_func=lambda x: "1 (normal)" if x == 1 else "2 (above normal)" if x == 2 else "3 (high)"
     )
 
     gluc = st.selectbox(
-        "Glucose", [1, 2, 3], format_func=lambda x: "1 (normal)" if x == 1 else "2 (above normal)" if x == 2 else "3 (well above normal)"
+        "Glucose", [1, 2, 3], format_func=lambda x: "1 (normal)" if x == 1 else "2 (above normal)" if x == 2 else "3 (high)"
     )
 
     smoke = st.selectbox(

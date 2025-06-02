@@ -1,0 +1,4 @@
+[theme]
+base = "dark"
+backgroundColor = "#3f4d69"
+secondaryBackgroundColor = "#7173b7"
