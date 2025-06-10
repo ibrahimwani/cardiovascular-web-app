@@ -23,23 +23,40 @@ for name in model_names:
 
 # Prediction logic
 def cardio_prediction(input_data):
+   
     input_data_np = np.asarray(input_data).reshape(1, -1)
-    
     probabilities = {}
+
     for name, model in models.items():
         prob = model.predict_proba(input_data_np)[0][1]
+        
+        # Exclude DecisionTree if overconfident
+        if name == "DecisionTree" and (prob == 1.0 or prob == 0.0):
+            continue
         probabilities[name] = prob
 
+    # Selection logic
     high_probs = {k: v for k, v in probabilities.items() if v >= 0.5}
-    chosen_model_name = max(high_probs, key=high_probs.get) if high_probs else min(probabilities, key=probabilities.get)
+    if high_probs:
+        chosen_model_name = max(high_probs, key=high_probs.get)
+    else:
+        chosen_model_name = min(probabilities, key=probabilities.get)
 
+    # Final prediction
     chosen_model = models[chosen_model_name]
     final_prediction = chosen_model.predict(input_data_np)[0]
     final_probability = probabilities[chosen_model_name]
 
-    result = "⚠️ Patient is at risk of cardiovascular disease." if final_prediction == 1 else "✅ Patient is likely healthy."
 
-    return result, final_probability, chosen_model_name
+    # Result message
+    result = (
+        "⚠️ Patient is at risk of cardiovascular disease."
+        if final_prediction == 1 else
+        "✅ Patient is likely healthy."
+    )
+
+    return result, final_probability, chosen_model_name, probabilities
+
 
 # Streamlit UI
 def main():
@@ -85,10 +102,28 @@ def main():
                 int(smoke), int(alco), int(active)
             ]
 
-            result, probability, model_used = cardio_prediction(input_list)
+            result, final_probability, model_used, all_probs = cardio_prediction(input_list)
 
             st.success(result)
-            st.info(f"🧠 {model_used} has predicted a probability of having cardiovascular disease :{probability * 100:.2f}%")
+            st.info(f"🧠 **{model_used}** predicted a **{final_probability * 100:.2f}%** risk of cardiovascular disease.")
+
+            # Probability interpretation
+            probability = final_probability
+            if probability >= 0.75:
+                st.warning("🚨  Critical risk detected! Please consult a cardiologist immediately.")
+            elif 0.5 <= probability < 0.75:
+                st.info("🟠 Subclinical markers point to moderate risk—consistent monitoring and lifestyle optimization are advisable")
+            elif 0.25 <= probability < 0.5:
+                st.info("📉 Cardiovascular outlook is stable, but closer attention could reduce long-term risk.")
+            else:
+                st.success("🌿 Your biometrics suggest a protective health profile—keep up the positive behavior.")
+
+            # Optional: Show all model probabilities
+            with st.expander("🔍 See confidence from all models"):
+                for name, prob in all_probs.items():
+                    st.write(f"{name}: {prob * 100:.2f}%")
+
+            
         except Exception as e:
             st.error(f"❌ Please make sure all inputs are valid numeric values.\n\n{str(e)}")
 
